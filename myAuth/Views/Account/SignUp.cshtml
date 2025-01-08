@@ -1,0 +1,62 @@
+﻿@model myAuth.Models.SignUpRequest
+
+@{
+    ViewData["Title"] = "SignUp";
+}
+
+<h1>SignUp</h1>
+@{
+    var lst = ViewData["GetRoles"] as IEnumerable<RoleResponse>;
+}
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SignUp">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="login" class="control-label"></label>
+                <input asp-for="login" class="form-control" />
+                <span asp-validation-for="login" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="psw" class="control-label"></label>
+                <input asp-for="psw" class="form-control" />
+                <span asp-validation-for="psw" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="psw2" class="control-label"></label>
+                <input asp-for="psw2" class="form-control" />
+                <span asp-validation-for="psw2" class="text-danger"></span>
+            </div>
+            @* <div class="form-group"> *@
+            @*     <label asp-for="role" class="control-label"></label> *@
+            @*     <input asp-for="role" class="form-control" /> *@
+            @*     <span asp-validation-for="role" class="text-danger"></span> *@
+            @* </div> *@
+            <div class="form-group">
+                <label asp-for="role" class="control-label"></label>
+                <select class="form-control" id="role"name="role">
+                @foreach(var item in lst)
+                {
+                    <option value="@item.id">@item.name</option>
+                }
+                </select>>
+                <span asp-validation-for="role" class="text-danger"></span>
+                @* <label asp-for="role" class="control-label"></label> *@
+                @* <input asp-for="role" class="form-control" /> *@
+                @* <span asp-validation-for="role" class="text-danger"></span> *@
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Register" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
