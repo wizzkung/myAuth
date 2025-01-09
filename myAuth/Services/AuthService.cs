@@ -14,6 +14,16 @@ namespace myAuth.Service
             this.configuration = configuration;
         }
 
+        public bool ChangePassword(ChangePsw psw)
+        {
+            using (SqlConnection db = new SqlConnection(configuration["db"]))
+            {
+                
+                var res = db.Query<dynamic>("pUserChangePassword", new {@login = psw.login, @oldPsw = psw.old_psw, @newPsw = psw.new_psw }, commandType: System.Data.CommandType.StoredProcedure).FirstOrDefault();
+                return res != null ? true : false;
+            }
+        }
+
         public IEnumerable<RoleResponse> GetRoles()
         {
             using (SqlConnection db = new SqlConnection(configuration["db"]))

@@ -13,7 +13,7 @@ namespace myAuth.Controllers
     public class AccountController : Controller
     {
         IService service;
-       public AccountController(IService service) 
+        public AccountController(IService service)
         {
             this.service = service;
         }
@@ -26,7 +26,7 @@ namespace myAuth.Controllers
         }
 
         [HttpPost, AllowAnonymous]
-        public async Task <IActionResult> Login(SignInRequest model)
+        public async Task<IActionResult> Login(SignInRequest model)
         {
             var result = service.SignIn(model);
             if (result)
@@ -45,7 +45,7 @@ namespace myAuth.Controllers
         [HttpGet, AllowAnonymous]
         public IActionResult SignUp()
         {
-            ViewData["GetRoles"] = service.GetRoles();  
+            ViewData["GetRoles"] = service.GetRoles();
             return View();
         }
 
@@ -65,6 +65,27 @@ namespace myAuth.Controllers
             ModelState.AddModelError("", "Login is already registered");
             ViewData["GetRoles"] = service.GetRoles();
             return View();
+        }
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ChangePassword(ChangePsw psw)
+        {
+            var result = service.ChangePassword(psw);
+            if (result)
+            {
+                ViewData["Message"] = "Пароль успешно изменен!";
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ViewData["Message"] = "Произошла ошибка, проверьте данные";
+                return View();
+            }
         }
     }
 }

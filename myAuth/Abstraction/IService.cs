@@ -8,5 +8,6 @@ namespace myAuth.Abstraction
         //public bool LogIn(string login, string psw);
         public bool SignIn(SignInRequest request);
         public IEnumerable<RoleResponse> GetRoles();
+        public bool ChangePassword(ChangePsw psw);
     }
 }
