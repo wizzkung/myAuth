@@ -3,6 +3,10 @@ using myAuth.Abstraction;
 using Dapper;
 using myAuth.Models;
 using Azure.Core;
+using OfficeOpenXml;
+using System.IO;
+using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace myAuth.Service
 {
@@ -23,6 +27,7 @@ namespace myAuth.Service
                 return res != null ? true : false;
             }
         }
+
 
         public IEnumerable<RoleResponse> GetRoles()
         {
@@ -72,5 +77,36 @@ namespace myAuth.Service
 
             }
         }
+
+        private byte[] GenerateExcelFile(IEnumerable<RoleResponse> data)
+        {
+            using (var package = new ExcelPackage())
+            {
+                // Создаем лист в Excel-файле
+                var worksheet = package.Workbook.Worksheets.Add("Roles");
+
+                // Записываем заголовки
+                worksheet.Cells[1, 1].Value = "Role ID";
+                worksheet.Cells[1, 2].Value = "Role Name";
+
+                // Записываем данные
+                int row = 2;
+                foreach (var role in data)
+                {
+                    worksheet.Cells[row, 1].Value = role.id;
+                    worksheet.Cells[row, 2].Value = role.name;
+       
+                    row++;
+                }
+
+                // Автоширина колонок
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                // Возвращаем содержимое Excel-файла в виде массива байтов
+                return package.GetAsByteArray();
+            }
+        }
     }
+
 }
+

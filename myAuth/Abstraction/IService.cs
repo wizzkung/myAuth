@@ -1,4 +1,5 @@
-﻿using myAuth.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using myAuth.Models;
 
 namespace myAuth.Abstraction
 {
@@ -9,5 +10,7 @@ namespace myAuth.Abstraction
         public bool SignIn(SignInRequest request);
         public IEnumerable<RoleResponse> GetRoles();
         public bool ChangePassword(ChangePsw psw);
+
+    
     }
 }

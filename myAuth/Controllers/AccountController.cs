@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -87,5 +88,76 @@ namespace myAuth.Controllers
                 return View();
             }
         }
+
+        [HttpGet, AllowAnonymous]
+        public IActionResult Report()
+        {
+            return View();
+        }
+
+        [HttpGet, Route("GetExcel"), AllowAnonymous]
+        public ActionResult GetExcel()
+        {
+            using (var ms = new MemoryStream())
+            {
+                using (XLWorkbook wb = new XLWorkbook())
+                {
+                    var ws = wb.AddWorksheet("report");
+                    ws.Cell(1, 1).Value = "Id";
+                    ws.Cell(1, 1).Style.Font.Bold = true;
+                    ws.Cell(1, 1).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+
+                    ws.Cell(1, 2).Value = "Name";
+                    ws.Cell(1, 2).Style.Font.Bold = true;
+                    ws.Cell(1, 2).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+
+                    //ws.Column(1).Width = 25;
+                    //ws.Column(2).Width = 15;
+
+                    //List<Student> lst = new List<Student>()
+                    //{
+                    //    new Student{Id=1, Name="Иванов" },
+                    //    new Student{Id=2, Name="Петров" }
+                    //};
+
+                    //ws.Cell(2, 1).InsertData(lst);
+                    //ws.Cell(2, 1).InsertData(null);
+                    ws.RangeUsed().SetAutoFilter();
+                    ws.Columns("A", "B").AdjustToContents();
+
+                    ws.SheetView.FreezeRows(1);
+                    wb.SaveAs(ms);
+                    ms.Position = 0;
+                    ms.Flush();
+                    var bytes = ms.ToArray();
+
+                    return File(bytes,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "report____" + DateTime.Now.ToString("ddMMyyyy_hhmmss") + ".xlsx");
+                }
+            }
+        }
+
+        [HttpGet, Route("GetCsv"), AllowAnonymous]
+        public IActionResult ExportToCSV(IEnumerable<RoleResponse> roles)
+        {
+            string csvContent = string.Empty;
+
+       
+            csvContent += "RoleId,RoleName" + Environment.NewLine;
+
+            
+            foreach (var role in roles)
+            {
+                csvContent += $"{role.id},{role.name}" + Environment.NewLine;
+            }
+
+            
+            var bytes = System.Text.Encoding.UTF8.GetBytes(csvContent);
+            return File(bytes, "application/octet-stream", "RoleData.csv");
+        }
+
+
+
     }
 }
